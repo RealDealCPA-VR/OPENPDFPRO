@@ -25,7 +25,7 @@ Last updated: 2026-02-14 (wave 1)
 
 ## Todo
 - [x] T001: git init, ledger, remote config | Verify: git remote -v
-- [ ] T002: Scaffold Electron app (package.json, main, preload, renderer, pdfjs viewer open/render) | Verify: `npm run build` + smoke launch test
+- [x] T002: Scaffold Electron app (package.json, main, preload, renderer, pdfjs viewer open/render) | Verify: `npm run build` + smoke launch test
 - [ ] T003: Viewer features: thumbnails, zoom, rotate, page nav, text search, sidebar TOC | Verify: unit tests + smoke
 - [ ] T004: Annotations layer (highlight, note, draw, shapes, text) persisted via pdf-lib | Verify: round-trip test
 - [ ] T005: Page ops: delete/rotate/extract/reorder/insert/merge/split | Verify: unit tests on sample PDF
@@ -39,18 +39,19 @@ Last updated: 2026-02-14 (wave 1)
 - T013: Final regression: full test suite + app smoke + push milestone | Verify: CI green
 
 ## Progress and evidence
+- 2026-02-14 T002: Electron+pdf.js scaffold (src/main.js, preload.js, renderer/*) built; sample.pdf created; electron launched & killed OK (smoke PASS); pushed fad6a7e to origin/main
 - 2026-02-14 T001: git init main; ledger created; gh auth OK; remote pending push (repo exists: RealDealCPA-VR/OPENPDFPRO)
 
 ## Pickup verification
 - 2026-02-14 wave1: fresh repo; nothing to verify yet.
 
 ## Handoff
-- Current checkpoint: empty scaffolded repo + ledger
-- Last completed: T001
-- In progress: T002
-- Next exact action: write package.json + electron main/preload/renderer with pdfjs-dist viewer; npm install; verify build
-- Files changed: .pi/goals/ACTIVE.md, .gitignore (pending)
-- Commands/checks: git init PASS
+- Current checkpoint: M0 pushed (fad6a7e), app opens/renders PDFs locally
+- Last completed: T002
+- In progress: T003
+- Next exact action: implement thumbnails already exist → add page-nav scroll sync, text-search highlight layer, outline/TOC, zoom presets; then unit test harness (node --test)
+- Files changed: src/main.js, src/preload.js, src/renderer/*, package.json, test/sample.pdf
+- Commands/checks: node --check PASS; electron smoke launch PASS; push PASS
 - Decisions/assumptions: Electron + pdfjs-dist + pdf-lib stack; updates via electron-updater only
 - Blockers/risks: scope enormous — work in milestone waves, keep ledger current
 - Context note: initial creation

@@ -11,3 +11,7 @@ button:hover { background: #555; }
 #sidebar img { width: 100%; border: 1px solid #555; margin-bottom: 6px; cursor: pointer; }
 #viewer { flex: 1; overflow: auto; padding: 12px; text-align: center; }
 #viewer canvas { margin: 0 auto 12px auto; box-shadow: 0 2px 8px rgba(0,0,0,.5); background: white; }
+.page { position: relative; display: inline-block; margin-bottom: 12px; }
+.hl { position: absolute; background: rgba(255, 215, 0, .45); pointer-events: none; border-radius: 2px; }
+#outline a { display: block; color: var(--text); text-decoration: none; font-size: 12px; padding: 2px 4px; overflow: hidden; text-overflow: ellipsis; }
+#outline a:hover { background: #444; }
