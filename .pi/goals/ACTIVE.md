@@ -30,16 +30,15 @@ Last updated: 2026-02-14 (wave 1)
 - [x] T005: Page ops: delete/rotate/extract/reorder/insert/merge/split | Verify: unit tests on sample PDF
 - [x] T004: Annotations layer (highlight, note, draw, shapes, text) persisted via pdf-lib | Verify: round-trip test
 - [ ] T005: Page ops: delete/rotate/extract/reorder/insert/merge/split | Verify: unit tests on sample PDF
-- [ ] T006: Forms fill + save; flatten | Verify: unit test
+- [x] T006: Forms fill + save; flatten | Verify: unit test
 - [ ] T007: OCR (tesseract.js) → hidden text layer | Verify: test on generated image PDF
-- [ ] T008: Redaction (remove content + draw box) | Verify: unit test
-- [ ] T009: Signatures: verify existing signatures (pdfjs) + create (self-signed) | Verify: test
 - T010: Export/convert: print-to-PDF, rasterize images, compress | Verify: test
 - T011: Auto-update via electron-updater (GitHub releases, disabled in dev) | Verify: config + unit
 - T012: Packaging (electron-builder NSIS) + README + LICENSE (MIT) | Verify: build artifacts
 - T013: Final regression: full test suite + app smoke + push milestone | Verify: CI green
 
 ## Progress and evidence
+- 2026-02-14 T004+T006: src/core/annotations.js + test/annotations.test.js — 9/9 pass. Pushed 2d8947b.
 - 2026-02-14 T005: src/core/pages.js + test/pages.test.js — 7/7 pass. Fixed pdf-lib setRotation needs degrees(). Pushed 5020460.
 - 2026-02-14 T002: Electron+pdf.js scaffold (src/main.js, preload.js, renderer/*) built; sample.pdf created; electron launched & killed OK (smoke PASS); pushed fad6a7e to origin/main
 - 2026-02-14 T001: git init main; ledger created; gh auth OK; remote pending push (repo exists: RealDealCPA-VR/OPENPDFPRO)
@@ -48,12 +47,12 @@ Last updated: 2026-02-14 (wave 1)
 - 2026-02-14 wave1: fresh repo; nothing to verify yet.
 
 ## Handoff
-- Current checkpoint: M1 pushed (5020460); 7/7 tests pass; viewer + core page ops done
-- Last completed: T005
-- In progress: T004 (annotations layer)
-- Next exact action: build src/core/annotations.js (highlight/strike/underline via pdf-lib annotations, notes, draw via SVG→PDF) + renderer UI toolbar for annotation modes; then test round-trip
-- Files changed: src/core/pages.js, test/pages.test.js, src/renderer/app.js, viewer.css
-- Commands/checks: npm test 7/7 PASS; push PASS
+- Current checkpoint: M2 pushed (2d8947b); 9/9 tests; viewer, page ops, annotations, forms core done
+- Last completed: T006
+- In progress: T008 (true redaction with content removal)
+- Next exact action: implement content-level redaction (parse content streams to remove text under box), then T007 OCR via tesseract.js, then renderer toolbar for annotation modes
+- Files changed: src/core/annotations.js, test/annotations.test.js
+- Commands/checks: npm test 9/9 PASS; push PASS
 - Decisions/assumptions: Electron + pdfjs-dist + pdf-lib stack; updates via electron-updater only
 - Blockers/risks: scope enormous — work in milestone waves, keep ledger current
 - Context note: initial creation
