@@ -1,0 +1,6 @@
+node_modules/
+dist/
+out/
+*.log
+.pi/goals/archive/
+.DS_Store

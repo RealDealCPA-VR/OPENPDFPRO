@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Open PDF Pro</title>
+  <link rel="stylesheet" href="viewer.css" />
+</head>
+<body>
+  <div id="toolbar">
+    <button id="btn-open">Open…</button>
+    <button id="btn-save">Save</button>
+    <span id="doc-name"></span>
+    <span class="spacer"></span>
+    <button id="btn-prev">◀</button>
+    <span id="page-indicator">0 / 0</span>
+    <button id="btn-next">▶</button>
+    <button id="btn-zoom-out">−</button>
+    <span id="zoom-label">100%</span>
+    <button id="btn-zoom-in">+</button>
+    <button id="btn-rotate">⟳</button>
+    <input id="search-input" placeholder="Search…" />
+    <span id="search-count"></span>
+  </div>
+  <div id="main">
+    <div id="sidebar"></div>
+    <div id="viewer"></div>
+  </div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

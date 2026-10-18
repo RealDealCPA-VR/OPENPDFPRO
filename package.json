@@ -1,0 +1,21 @@
+{
+  "name": "openpdfpro",
+  "productName": "Open PDF Pro",
+  "version": "0.1.0",
+  "description": "Open-source local-only desktop PDF editor (Acrobat Pro feature parity, clean-room)",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/",
+    "dist": "electron-builder --win"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "dependencies": {
+    "pdfjs-dist": "^4.8.69",
+    "pdf-lib": "^1.17.1"
+  }
+}
