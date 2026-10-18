@@ -15,7 +15,8 @@
     "electron-builder": "^25.0.0"
   },
   "dependencies": {
+    "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^4.8.69",
-    "pdf-lib": "^1.17.1"
+    "tesseract.js": "^7.0.0"
   }
 }
