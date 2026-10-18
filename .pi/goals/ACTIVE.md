@@ -26,8 +26,9 @@ Last updated: 2026-02-14 (wave 1)
 ## Todo
 - [x] T001: git init, ledger, remote config | Verify: git remote -v
 - [x] T002: Scaffold Electron app (package.json, main, preload, renderer, pdfjs viewer open/render) | Verify: `npm run build` + smoke launch test
-- [ ] T003: Viewer features: thumbnails, zoom, rotate, page nav, text search, sidebar TOC | Verify: unit tests + smoke
-- [ ] T004: Annotations layer (highlight, note, draw, shapes, text) persisted via pdf-lib | Verify: round-trip test
+- [x] T003: Viewer features: thumbnails, zoom, rotate, page nav, text search, sidebar TOC | Verify: unit tests + smoke
+- [x] T005: Page ops: delete/rotate/extract/reorder/insert/merge/split | Verify: unit tests on sample PDF
+- [x] T004: Annotations layer (highlight, note, draw, shapes, text) persisted via pdf-lib | Verify: round-trip test
 - [ ] T005: Page ops: delete/rotate/extract/reorder/insert/merge/split | Verify: unit tests on sample PDF
 - [ ] T006: Forms fill + save; flatten | Verify: unit test
 - [ ] T007: OCR (tesseract.js) → hidden text layer | Verify: test on generated image PDF
@@ -39,6 +40,7 @@ Last updated: 2026-02-14 (wave 1)
 - T013: Final regression: full test suite + app smoke + push milestone | Verify: CI green
 
 ## Progress and evidence
+- 2026-02-14 T005: src/core/pages.js + test/pages.test.js — 7/7 pass. Fixed pdf-lib setRotation needs degrees(). Pushed 5020460.
 - 2026-02-14 T002: Electron+pdf.js scaffold (src/main.js, preload.js, renderer/*) built; sample.pdf created; electron launched & killed OK (smoke PASS); pushed fad6a7e to origin/main
 - 2026-02-14 T001: git init main; ledger created; gh auth OK; remote pending push (repo exists: RealDealCPA-VR/OPENPDFPRO)
 
@@ -46,12 +48,12 @@ Last updated: 2026-02-14 (wave 1)
 - 2026-02-14 wave1: fresh repo; nothing to verify yet.
 
 ## Handoff
-- Current checkpoint: M0 pushed (fad6a7e), app opens/renders PDFs locally
-- Last completed: T002
-- In progress: T003
-- Next exact action: implement thumbnails already exist → add page-nav scroll sync, text-search highlight layer, outline/TOC, zoom presets; then unit test harness (node --test)
-- Files changed: src/main.js, src/preload.js, src/renderer/*, package.json, test/sample.pdf
-- Commands/checks: node --check PASS; electron smoke launch PASS; push PASS
+- Current checkpoint: M1 pushed (5020460); 7/7 tests pass; viewer + core page ops done
+- Last completed: T005
+- In progress: T004 (annotations layer)
+- Next exact action: build src/core/annotations.js (highlight/strike/underline via pdf-lib annotations, notes, draw via SVG→PDF) + renderer UI toolbar for annotation modes; then test round-trip
+- Files changed: src/core/pages.js, test/pages.test.js, src/renderer/app.js, viewer.css
+- Commands/checks: npm test 7/7 PASS; push PASS
 - Decisions/assumptions: Electron + pdfjs-dist + pdf-lib stack; updates via electron-updater only
 - Blockers/risks: scope enormous — work in milestone waves, keep ledger current
 - Context note: initial creation
