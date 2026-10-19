@@ -3,7 +3,7 @@
 Status: ACTIVE
 Goal: Create a perfect open-source clone of Adobe PDF Pro: local-only desktop app using desktop resources; no cloud features except update checks. Push milestones to https://github.com/RealDealCPA-VR/OPENPDFPRO and continue across contexts until complete.
 Started: 2026-02-14
-Last updated: 2026-02-14 (wave 1, after M3)
+Last updated: wave 2 (post-M4 pickup)
 
 ## Scope and acceptance criteria
 - [ ] A1: Desktop app (Electron) runs on Windows; opens and renders PDFs locally (pdf.js)
@@ -31,8 +31,8 @@ Last updated: 2026-02-14 (wave 1, after M3)
 - [x] T005: Page ops: merge/split/extract/delete/reorder/rotate | Verify: test/pages.test.js 7/7
 - [x] T006: Forms fill/flatten/list | Verify: test/annotations.test.js
 - [x] T008: Redaction with content removal | Verify: test/redact.test.js 11/11
-- [ ] T007: OCR (tesseract.js) → hidden text layer | Verify: test on generated image PDF
-- [ ] T009: Signatures: verify existing + create (self-signed, node:crypto) | Verify: test
+- [x] T007: OCR (tesseract.js) → hidden text layer | Verify: test/ocr.test.js (commit 96eb9ed)
+- [ ] T009: Signatures: verify existing (ByteRange integrity + PKCS#7/CMS digest+sig via node:crypto) | Verify: test/signature.test.js
 - [ ] T009b: Renderer toolbar for annotation/ops modes wired to core + IPC | Verify: smoke
 - [ ] T010: Export/convert: print-to-PDF, rasterize images, compress | Verify: test
 - [ ] T011: Auto-update via electron-updater (GitHub releases, disabled in dev) | Verify: config + unit
@@ -40,6 +40,7 @@ Last updated: 2026-02-14 (wave 1, after M3)
 - [ ] T013: Final regression: full test suite + app smoke + push milestone | Verify: CI green
 
 ## Progress and evidence
+- wave2 pickup: verified 96eb9ed pushed, npm test 13/13 PASS. Plan: T009 verify-only (A3 says "verify"; creation deferred — node:crypto cannot mint X.509), T009b+T007-UI combined IPC toolbar, T010, T011, T012, T013.
 - 2026-02-14 T008: src/core/redact.js (zlib stream surgery + pdfjs victim detection) + test/redact.test.js — 11/11 pass. Pushed 42378f2.
 - 2026-02-14 T004+T006: src/core/annotations.js + test/annotations.test.js — 9/9 pass. Pushed 2d8947b.
 - 2026-02-14 T005: src/core/pages.js + test/pages.test.js — 7/7 pass. Fixed pdf-lib setRotation needs degrees(). Pushed 5020460.
@@ -50,10 +51,10 @@ Last updated: 2026-02-14 (wave 1, after M3)
 - 2026-02-14 wave1: repo verified: git log shows 4 commits, npm test 11/11 PASS, ledger todo rewritten after edit mangle.
 
 ## Handoff
-- Current checkpoint: M3 pushed (42378f2); 11/11 tests
-- Last completed: T008
-- In progress: T007 (OCR)
-- Next exact action: `npm i tesseract.js`; create src/core/ocr.js (rasterize page via pdfjs → PNG bytes → tesseract.recognize → overlay invisible text via pdf-lib drawText with renderMode 3 / Tr 3); test with generated image-only PDF. Then T009 signatures (node:crypto PKCS#7 verify is complex — start with verify via pdfjs getFieldObjects/permissions or qpdf-less minimal check), then T009b renderer toolbar.
+- Current checkpoint: M4 pushed (96eb9ed); 13/13 tests
+- Last completed: T007 (M4 OCR core, 96eb9ed)
+- In progress: T009 signature verify
+- Next exact action: write src/core/signature.js (DER-lite parser + CMS SignedData verify) and test/signature.test.js (openssl-generated fixture, skip if openssl missing). Then export.js (compress/print/rasterize), IPC toolbar, updater, packaging, README.
 - Files changed: src/core/redact.js, test/redact.test.js (latest)
 - Commands/checks: npm test 11/11 PASS; git push PASS
 - Decisions/assumptions: Electron + pdfjs-dist + pdf-lib + tesseract.js stack; updates via electron-updater only; redaction v1 works on FlateDecode streams with literal-string text (falls back to box-only)

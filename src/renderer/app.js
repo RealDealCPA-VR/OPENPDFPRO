@@ -145,3 +145,94 @@ $('btn-zoom-out').onclick = () => { state.scale = Math.max(0.25, state.scale / 1
 $('btn-rotate').onclick = () => { state.rotation = (state.rotation + 90) % 360; state.doc && (rerender(), renderSidebar()); };
 
 window.pdfpro.onPdfLoaded(({ data, path }) => loadDocument(data, path.split(/[\\/]/).pop(), path));
+
+// ---- ops toolbar (core via IPC) ----
+async function runOp(op, payload) {
+  if (!state.bytes) return null;
+  const res = await window.pdfpro.op(op, state.bytes, payload || {});
+  if (!res.ok) {
+    if (!res.canceled) alert('Operation failed: ' + (res.error || 'unknown'));
+    return null;
+  }
+  if (res.bytes) await loadDocument(new Uint8Array(res.bytes), state.path);
+  return res;
+}
+
+function num(v, dflt = 0) { const n = parseFloat(v); return Number.isFinite(n) ? n : dflt; }
+function curPage() { return state.pageNum; }
+
+$('btn-delete-page').onclick = async () => {
+  if (!confirm(`Delete page ${curPage()}?`)) return;
+  await runOp('deletePages', { pages: [curPage()] });
+};
+$('btn-extract').onclick = async () => {
+  const range = prompt('Extract pages (from-to, e.g. 2-5):', `${curPage()}-${curPage()}`);
+  if (!range) return;
+  const [a, b] = range.split('-').map((x) => parseInt(x, 10));
+  const res = await runOp('extract', { from: a, to: b || a });
+  if (res && res.bytes) await window.pdfpro.saveAs(res.bytes, 'extract.pdf');
+};
+$('btn-merge').onclick = () => runOp('merge');
+$('btn-split').onclick = () => runOp('split');
+$('btn-reorder').onclick = async () => {
+  const order = prompt('New page order (comma-separated):', '1,2,3');
+  if (!order) return;
+  await runOp('reorder', { order: order.split(',').map((x) => parseInt(x.trim(), 10)).filter(Number.isFinite) });
+};
+$('btn-rotate').onclick = async () => { await runOp('rotate', { pages: [curPage()], deg: 90 }); if (state.doc) { state.rotation = (state.rotation + 90) % 360; rerender(); renderSidebar(); } };
+$('btn-redact').onclick = async () => {
+  const spec = prompt('Redact regions on page (x,y,w,h per region; semicolon-separated):', '50,50,100,30');
+  if (!spec) return;
+  const regions = spec.split(';').map((s) => { const [x, y, w, h] = s.split(',').map(num); return { x, y, w, h }; });
+  await runOp('redact', { page: curPage(), regions });
+};
+$('btn-freetext').onclick = async () => {
+  const text = prompt('Free text:');
+  if (text === null) return;
+  await runOp('addFreeText', { page: curPage(), x: 50, y: 700, size: 14, text });
+};
+$('btn-rect').onclick = async () => {
+  const spec = prompt('Rectangle x,y,w,h:', '50,600,120,60');
+  if (!spec) return;
+  const [x, y, w, h] = spec.split(',').map(num);
+  await runOp('addRectangle', { page: curPage(), x, y, w, h });
+};
+$('btn-flatten').onclick = () => runOp('flattenForm');
+$('btn-compress').onclick = () => runOp('compress');
+$('btn-verify-sig').onclick = async () => {
+  const res = await runOp('verifySignatures');
+  if (res && res.data) {
+    const lines = res.data.map((r) => `ByteRange ${JSON.stringify(r.byteRange)}: structure=${r.structural.ok ? 'OK' : 'BROKEN'} signature=${r.crypto.ok ? 'VALID' : 'INVALID'}${r.crypto.reason ? ' (' + r.crypto.reason + ')' : ''}${r.signer ? '\n  signer: ' + r.signer.subject : ''}`);
+    alert(lines.length ? lines.join('\n') : 'No signatures found.');
+  }
+};
+$('btn-ocr').onclick = async () => {
+  if (!state.doc) return;
+  const btn = $('btn-ocr'); btn.textContent = 'OCR…'; btn.disabled = true;
+  try {
+    const page = await state.doc.getPage(curPage());
+    const dpi = 300, scale = dpi / 72;
+    const vp = page.getViewport({ scale });
+    const c = document.createElement('canvas');
+    c.width = vp.width; c.height = vp.height;
+    await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+    const blob = await new Promise((r) => c.toBlob(r, 'image/png'));
+    const pngBytes = new Uint8Array(await blob.arrayBuffer());
+    const res = await window.pdfpro.op('ocr', state.bytes, {
+      pngBytes, page: curPage(), pointsPerPixel: 72 / dpi, pageHeightPx: vp.height, lang: 'eng'
+    });
+    if (res.ok && res.bytes) await loadDocument(new Uint8Array(res.bytes), state.path);
+    else if (!res.ok && !res.canceled) alert('OCR failed: ' + res.error);
+  } finally { btn.textContent = 'OCR'; btn.disabled = false; }
+};
+$('btn-export-png').onclick = async () => {
+  if (!state.doc) return;
+  const page = await state.doc.getPage(curPage());
+  const vp = page.getViewport({ scale: 2 });
+  const c = document.createElement('canvas');
+  c.width = vp.width; c.height = vp.height;
+  await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+  const blob = await new Promise((r) => c.toBlob(r, 'image/png'));
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  await window.pdfpro.saveAs(bytes, `page-${curPage()}.png`);
+};

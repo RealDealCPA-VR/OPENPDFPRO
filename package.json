@@ -10,11 +10,20 @@
     "dist": "electron-builder --win"
   },
   "license": "MIT",
+  "build": {
+    "appId": "com.openpdfpro.app",
+    "productName": "Open PDF Pro",
+    "files": ["src/**/*", "package.json"],
+    "win": { "target": "nsis" },
+    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true },
+    "publish": { "provider": "github", "owner": "RealDealCPA-VR", "repo": "OPENPDFPRO" }
+  },
   "devDependencies": {
     "electron": "^33.0.0",
     "electron-builder": "^25.0.0"
   },
   "dependencies": {
+    "electron-updater": "^6.8.9",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^4.8.69",
     "tesseract.js": "^7.0.0"
